@@ -25,6 +25,10 @@ Diffbot.prototype._request = function(params, options, callback) {
         '?token=' + this.token +
         '&url=' + encodeURIComponent(params.url);
 
+    for (var key in options) {
+        url += '&' + key + '=' + options[key];
+    }
+
     request(url, function(error, response, body) {
         if (error) {
             callback(error);
@@ -32,5 +36,31 @@ Diffbot.prototype._request = function(params, options, callback) {
             callback(false, JSON.parse(body));
         }
     })
+
+};
+
+/**
+ * Fetches article
+ * @param {String} url
+ * @param {Object} [options], can have keys:
+ *      {Array} fields,
+ *      {Number} timeout
+ * @param {Function} callback
+ */
+Diffbot.prototype.article = function(url, options, callback) {
+
+    if (typeof options == 'function') {
+        callback = options;
+        options = {};
+    }
+
+    var params = {
+        type: 'article',
+        url: url
+    };
+
+    // TODO: validate options
+
+    this._request(params, options, callback);
 
 };
