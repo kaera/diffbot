@@ -1,0 +1,25 @@
+{
+  "name": "diffbot",
+  "version": "0.0.0",
+  "description": "Simple client for the Diffbot API",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kaera/diffbot.git"
+  },
+  "keywords": [
+    "diffbot"
+  ],
+  "author": "Anastasia Novak",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/kaera/diffbot/issues"
+  },
+  "homepage": "https://github.com/kaera/diffbot",
+  "dependencies": {
+    "request": "~2.30.0"
+  }
+}
