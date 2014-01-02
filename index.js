@@ -1,21 +1,23 @@
-var request = require('request');
+var request = require('request'),
+    vow = require('vow');
 
-var Diffbot = exports.Diffbot =
-    function(token) {
-        if (!token) {
-            throw new Error ('Authorization token is required');
-        }
-        this.token = token;
-    };
+function Diffbot(token) {
+    if (!token) {
+        throw new Error ('Authorization token is required');
+    }
+    this.token = token;
+}
 
 /**
  * Sends request to API
  * @param {Object} params
  * @param {Object} [options]
- * @param {Function} callback
+ * @returns {Promise}
  * @private
  */
-Diffbot.prototype._request = function(params, options, callback) {
+Diffbot.prototype._request = function(params, options) {
+
+    var defer = vow.defer();
 
     if (!params.url) {
         throw new Error('The URL is required');
@@ -30,12 +32,14 @@ Diffbot.prototype._request = function(params, options, callback) {
     }
 
     request(url, function(error, response, body) {
-        if (error) {
-            callback(error);
+        if (error || response.statusCode != 200) {
+            defer.reject(JSON.parse(body));
         } else {
-            callback(false, JSON.parse(body));
+            defer.resolve(JSON.parse(body));
         }
-    })
+    });
+
+    return defer.promise();
 
 };
 
@@ -45,23 +49,20 @@ Diffbot.prototype._request = function(params, options, callback) {
  * @param {Object} [options], can have keys:
  *      {Array} fields,
  *      {Number} timeout
- * @param {Function} callback
+ * @returns {Promise}
  */
-Diffbot.prototype.article = function(url, options, callback) {
-
-    if (typeof options == 'function') {
-        callback = options;
-        options = {};
-    }
+Diffbot.prototype.article = function(url, options) {
 
     var params = {
         type: 'article',
         url: url
     };
 
+    options || (options = {});
+
     // TODO: validate options
 
-    this._request(params, options, callback);
+    return this._request(params, options);
 
 };
 
@@ -71,23 +72,19 @@ Diffbot.prototype.article = function(url, options, callback) {
  * @param {Object} [options], can have keys:
  *      {Number} all (0 | 1),
  *      {Number} timeout
- * @param {Function} callback
+ * @returns {Promise}
  */
-Diffbot.prototype.frontpage = function(url, options, callback) {
-
-    if (typeof options == 'function') {
-        callback = options;
-        options = {};
-    }
+Diffbot.prototype.frontpage = function(url, options) {
 
     var params = {
         type: 'frontpage',
         url: url
     };
 
+    options || (options = {});
     options.format = 'json';
 
-    this._request(params, options, callback);
+    return this._request(params, options);
 
 };
 
@@ -97,24 +94,22 @@ Diffbot.prototype.frontpage = function(url, options, callback) {
  * @param {Object} [options], can have keys:
  *      {Array} fields,
  *      {Number} timeout
- * @param {Function} callback
+ * @returns {Promise}
  */
-Diffbot.prototype.product = function(url, options, callback) {
-
-    if (typeof options == 'function') {
-        callback = options;
-        options = {};
-    }
+Diffbot.prototype.product = function(url, options) {
 
     var params = {
         type: 'product',
         url: url
     };
 
+    options || (options = {});
     if (options.fields) {
         options.fields = 'products(' + options.fields + ')';
     }
 
-    this._request(params, options, callback);
+    return this._request(params, options);
 
 };
+
+module.exports = Diffbot;
