@@ -64,3 +64,57 @@ Diffbot.prototype.article = function(url, options, callback) {
     this._request(params, options, callback);
 
 };
+
+/**
+ * Fetches frontpage
+ * @param {String} url
+ * @param {Object} [options], can have keys:
+ *      {Number} all (0 | 1),
+ *      {Number} timeout
+ * @param {Function} callback
+ */
+Diffbot.prototype.frontpage = function(url, options, callback) {
+
+    if (typeof options == 'function') {
+        callback = options;
+        options = {};
+    }
+
+    var params = {
+        type: 'frontpage',
+        url: url
+    };
+
+    options.format = 'json';
+
+    this._request(params, options, callback);
+
+};
+
+/**
+ * Fetches product
+ * @param {String} url
+ * @param {Object} [options], can have keys:
+ *      {Array} fields,
+ *      {Number} timeout
+ * @param {Function} callback
+ */
+Diffbot.prototype.product = function(url, options, callback) {
+
+    if (typeof options == 'function') {
+        callback = options;
+        options = {};
+    }
+
+    var params = {
+        type: 'product',
+        url: url
+    };
+
+    if (options.fields) {
+        options.fields = 'products(' + options.fields + ')';
+    }
+
+    this._request(params, options, callback);
+
+};
